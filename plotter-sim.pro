@@ -9,11 +9,13 @@ SOURCES += main.cpp \
     pen.cpp \
     motor.cpp \
     plotter.cpp \
-    simulator.cpp
+    simulator.cpp \
+    utils.cpp
 
 HEADERS += \
     pen.h \
     motor.h \
     plotter.h \
     simulator.h \
-    typesdefs.h
+    typesdefs.h \
+    utils.h

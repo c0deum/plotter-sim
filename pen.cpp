@@ -1,5 +1,4 @@
 #include <cassert>
-#include <fstream>
 
 #include "motor.h"
 
@@ -30,8 +29,8 @@ void Pen::attachMotorToAxis( const std::shared_ptr<Motor> & motor, Pen::Axis axi
     attachedMotors_[ static_cast< std::size_t >( axis ) ] = motor;
 }
 
-void Pen::log( Float logTime ){
-
+void Pen::log( Float logTime )
+{
     if( !toggled_ )
     {
         if( !stopLog )

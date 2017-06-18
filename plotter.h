@@ -20,11 +20,11 @@ public:
 
     void setMotorMaxVelocity( const std::string & name, Float velocity );
 
-    void setMotorAcceleration( const std::string & name, Float acceleration );
-
-    void togglePen( const std::string & name, bool toggle );
+    void setMotorAcceleration( const std::string & name, Float acceleration );   
 
     void setMotorTargetPosition( const std::string & name, Float position );
+
+    void togglePen( const std::string & name, bool toggle );
 
     void update( Float dt );
 

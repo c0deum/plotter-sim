@@ -24,10 +24,9 @@ private:
 
     void parseCreate( std::stringstream & lineStream );
     void parseAttach( std::stringstream & lineStream );
-    void parseSet( std::stringstream & line );
+    void parseSet( std::stringstream & lineStream );
 
-    bool isValidToken( const std::string token, const std::string & regexp );
-
+    bool isValidToken( const std::string token, const std::string & regexp );        
 private:
     Plotter plotter_;
     State state_ = State::CONF;
