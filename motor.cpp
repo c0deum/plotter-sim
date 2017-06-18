@@ -26,15 +26,20 @@ Float Motor::position() const
 
 void Motor::update( Float dt )
 {
-    //calculate movement direction
-    Float sign = ( targetPos_ >= currentPos_  )? 1.0 : -1.0;
-
+    //clamp
     if( velocity_ > maxVelocity_ )
         velocity_ = maxVelocity_;
+    if( velocity_ < -maxVelocity_ )
+        velocity_ = -maxVelocity_;
 
     Float oldPos = currentPos_;
+    Float oldVelocity = velocity_;
 
-    currentPos_ += sign * velocity_ * dt;
+    //direction to target
+    Float dir = ( targetPos_ >= currentPos_  )? 1.0 : -1.0;
+
+    //recalculate position
+    currentPos_ += velocity_ * dt;
 
     //value <= 0 means that we at target position
     if( ( targetPos_ - oldPos ) * ( targetPos_ - currentPos_ ) <= 0.0 )
@@ -45,17 +50,19 @@ void Motor::update( Float dt )
             dt *= std::abs( ( currentPos_ - targetPos_ ) / ( currentPos_ - oldPos ) );
         }
 
-        velocity_ -= acceleration_ * dt;
+        //reduce velosity, velocity depends on sign of velocity
+        Float sign = ( velocity_ >= 0 )? 1.0 : -1.0;
+        velocity_ += -sign * acceleration_ * dt;
 
         currentPos_ = targetPos_;
     }
     else
     {
-        //increase velocity
-        velocity_ += acceleration_ * dt;
+        //velocity depends on direction to target
+        velocity_ += dir * acceleration_ * dt;
     }
 
-    //velocite must be not negative
-    if( velocity_ < 0.0 )
+    //value < 0 means that velocity decreased to zero
+    if( oldVelocity * velocity_ < 0 )
         velocity_ = 0.0;
 }
