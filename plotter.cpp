@@ -40,6 +40,7 @@ void Plotter::setMotorMaxVelocity( const std::string & name, Float velocity )
 {    
     validate( motors_.find( name ) != motors_.end(),
               "Can not find motor with name " + name );
+    validate( velocity >= 0, "Invalid max velocity value... Must be >= 0" );
 
     motors_[ name ]->setMaxVelocity( velocity );
 }
@@ -48,6 +49,8 @@ void Plotter::setMotorAcceleration( const std::string & name, Float acceleration
 {
     validate( motors_.find( name ) != motors_.end(),
               "Can not find motor with name " + name );
+
+    validate( acceleration >= 0, "Invalid acceleration value... Must be >= 0" );
 
     motors_[ name ]->setAcceleration( acceleration );
 }
