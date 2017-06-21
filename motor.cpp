@@ -4,18 +4,21 @@
 
 void Motor::setMaxVelocity( Float velocity )
 {
+    std::lock_guard< std::mutex > guard( mutex_ );
     assert( velocity >= 0.0 && "Max velocity must be >= 0" );
     maxVelocity_ = velocity;
 }
 
 void Motor::setAcceleration( Float acceleration )
 {
+    std::lock_guard< std::mutex > guard( mutex_ );
     assert( acceleration >= 0.0 && "acceleration must be >= 0" );
     acceleration_ = acceleration;
 }
 
 void Motor::setTargetPosition( Float position )
-{
+{    
+    std::lock_guard< std::mutex > guard( mutex_ );
     targetPos_ = position;
 }
 
@@ -26,6 +29,7 @@ Float Motor::position() const
 
 void Motor::update( Float dt )
 {
+    std::lock_guard< std::mutex > guard( mutex_ );
     //clamp
     if( velocity_ > maxVelocity_ )
         velocity_ = maxVelocity_;

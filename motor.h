@@ -1,6 +1,8 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+#include <mutex>
+
 #include "typesdefs.h"
 
 class Motor
@@ -20,6 +22,8 @@ private:
      Float velocity_        = 0.0f;
      Float currentPos_      = 0.0f;
      Float targetPos_       = 0.0f;
+
+     std::mutex mutex_;
 };
 
 #endif // MOTOR_H

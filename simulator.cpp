@@ -60,23 +60,23 @@ void Simulator::update()
 
     while( State::FIN != state_ )
     {
-        old_ = now_;
-        now_ = std::chrono::high_resolution_clock::now();
+        std::unique_lock< std::mutex > lock( mutex_ );
 
-        std::chrono::duration<Float> duration = now_ - old_;
+        recalculateTimeVars();
 
-        logDuration_ += duration.count();
+        cv_.wait_for( lock,
+                      ( std::chrono::duration< Float>
+                        ( (logDurationRemainder_ < simDurationRemainder_ ) ?
+                          logDurationRemainder_: simDurationRemainder_ ) ),
+                     [&]{ recalculateTimeVars(); return ( logDuration_ >= logDt_ ) || ( simDuration_ >= simDt_ ); } );
 
         if( logDuration_ >= logDt_ )
         {
-            logDuration_ -= logDt_;
-
             time_ += logDt_;
 
+            logDuration_ -= logDt_;            
             plotter_.log( time_ );
-        }
-
-        simDuration_ += duration.count();
+        }        
 
         if( simDuration_ >= simDt_ )
         {
@@ -110,6 +110,8 @@ void Simulator::parse( const std::string & line )
                   "Invalid state for command [stop]... State must be [SIMS]" );
 
         state_ = State::FIN;
+
+        cv_.notify_one();
     }
     else if( KEYWORD_CREATE == token )
     {
@@ -216,6 +218,8 @@ void Simulator::parseSet( std::stringstream & lineStream )
 
         dtToken = dtToken.substr( 3 );
         simDt_ = std::stod( dtToken );
+
+        cv_.notify_one();
     }
     else if( KEYWORD_LOG == token )
     {
@@ -229,6 +233,8 @@ void Simulator::parseSet( std::stringstream & lineStream )
 
         dtToken = dtToken.substr( 3 );
         logDt_ = std::stod( dtToken );
+
+        cv_.notify_one();
     }
     else if( KEYWORD_PEN == token )
     {
@@ -282,4 +288,25 @@ void Simulator::parseSet( std::stringstream & lineStream )
 bool Simulator::isValidToken( const std::string token, const std::string & regexp )
 {
     return std::regex_match( token, std::regex( regexp ) );
+}
+
+void Simulator::recalculateTimeVars()
+{
+    old_ = now_;
+    now_ = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<Float> duration = now_ - old_;
+
+    logDuration_ += duration.count();
+    simDuration_ += duration.count();
+
+    logDurationRemainder_ = logDt_ - logDuration_;
+
+    if( logDurationRemainder_ < 0.0 )
+        logDurationRemainder_ = 0.0;
+
+    simDurationRemainder_ = simDt_ - simDuration_;
+
+    if( simDurationRemainder_ < 0.0 )
+        simDurationRemainder_ = 0.0;
 }

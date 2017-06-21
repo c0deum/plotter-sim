@@ -6,6 +6,8 @@
 #include <fstream>
 #include <string>
 
+#include <mutex>
+
 #include "typesdefs.h"
 
 class Motor;
@@ -38,6 +40,9 @@ private:
     std::array< std::shared_ptr< Motor >, 2 > attachedMotors_ = { nullptr };
 
     bool stopLog = false;
+
+    std::mutex mutex_;
+
 };
 
 #endif // PEN_H

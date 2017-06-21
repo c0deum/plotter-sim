@@ -19,6 +19,7 @@ Pen::~Pen()
 
 void Pen::setToggle( bool toggled )
 {
+    std::lock_guard< std::mutex > guard( mutex_ );
     toggled_ = toggled;
     if( !toggled_ )
         stopLog = false;
@@ -31,6 +32,7 @@ void Pen::attachMotorToAxis( const std::shared_ptr<Motor> & motor, Pen::Axis axi
 
 void Pen::log( Float logTime )
 {
+    std::lock_guard< std::mutex > guard( mutex_ );
     if( !toggled_ )
     {
         if( !stopLog )
